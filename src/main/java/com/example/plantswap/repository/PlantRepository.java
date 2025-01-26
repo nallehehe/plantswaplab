@@ -1,4 +1,7 @@
 package com.example.plantswap.repository;
 
-public interface PlantRepository {
+import com.example.plantswap.models.Plant;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PlantRepository extends JpaRepository<Plant, Long> {
 }
