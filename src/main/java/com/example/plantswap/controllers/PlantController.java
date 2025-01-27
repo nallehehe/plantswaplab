@@ -1,5 +1,6 @@
 package com.example.plantswap.controllers;
 
+import com.example.plantswap.enumHolder.Status;
 import com.example.plantswap.models.Plant;
 import com.example.plantswap.models.User;
 import com.example.plantswap.repository.PlantRepository;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("api/plants")
@@ -48,6 +50,12 @@ public class PlantController {
     @GetMapping
     public ResponseEntity<List<Plant>> getAllPlants() {
         List<Plant> plants = plantRepository.findAll();
+        return ResponseEntity.ok(plants);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<Plant>> getAllAvailablePlants() {
+        List<Plant> plants = plantRepository.findPlantByStatus(Status.AVAILABLE);
         return ResponseEntity.ok(plants);
     }
 
