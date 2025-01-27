@@ -21,8 +21,25 @@ public class PlantController {
     @Autowired
     private UserRepository userRepository;
 
+    private int maxPlants = 10;
+
     @PostMapping
     public ResponseEntity<Plant> createPlant(@RequestBody Plant plant) {
+
+        if(plant.getUser() != null && !userRepository.existsById(plant.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
+        }
+
+        //https://stackoverflow.com/questions/10696490/does-spring-data-jpa-have-any-way-to-count-entites-using-method-name-resolving
+        //https://docs.spring.io/spring-data/jpa/docs/1.6.4.RELEASE/reference/html/repositories.html
+
+        long userPlantAds = plantRepository.countByUser(plant.getUser());
+
+        if (userPlantAds >= maxPlants) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "The user cannot advertise more than " + maxPlants + " plants");
+        }
+
         Plant savedPlant = plantRepository.save(plant);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPlant);
@@ -45,6 +62,13 @@ public class PlantController {
     public ResponseEntity<Plant> updatePlant(@PathVariable Long id, @RequestBody Plant plant) {
         Plant existingPlant = plantRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found."));
+
+        long userPlantAds = plantRepository.countByUser(plant.getUser());
+
+        if (userPlantAds >= maxPlants) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "The user cannot advertise more than " + maxPlants + " plants");
+        }
 
         if (plant.getName() != null) {
             existingPlant.setName(plant.getName());

@@ -14,28 +14,36 @@ public class Plant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @NotNull
     private String name;
+
     @NotNull
     private Integer age;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "light")
     private Level light;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "water")
     private Level water;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "care_difficulty")
     private Level careDifficulty;
+
     @NotNull
     private String plantUrl;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "trade_or_sale")
     private ItemStatus itemStatus;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
