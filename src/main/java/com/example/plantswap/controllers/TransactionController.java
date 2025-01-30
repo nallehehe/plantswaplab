@@ -1,8 +1,10 @@
 package com.example.plantswap.controllers;
 
 import com.example.plantswap.enumHolder.ItemStatus;
+import com.example.plantswap.enumHolder.Status;
 import com.example.plantswap.models.Plant;
 import com.example.plantswap.models.Transaction;
+import com.example.plantswap.models.User;
 import com.example.plantswap.repository.PlantRepository;
 import com.example.plantswap.repository.TransactionRepository;
 import com.example.plantswap.repository.UserRepository;
@@ -34,8 +36,14 @@ public class TransactionController {
 
         Plant plant = plantRepository.findById(transaction.getPlant().getId()).get();
 
+        User user = userRepository.findById(transaction.getUser().getId()).get();
+
         if(plant.getItemStatus() == ItemStatus.TRADE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plant is not for sale.");
+        }
+
+        if(plant.getStatus() == Status.SOLD) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is already sold.");
         }
 
         // https://stackoverflow.com/questions/1514910/how-can-i-properly-compare-two-integers-in-java
@@ -48,6 +56,9 @@ public class TransactionController {
         }*/
 
         Transaction savedTransaction = transactionRepository.save(transaction);
+
+        plant.setStatus(Status.SOLD);
+        plantRepository.save(plant);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
     }
