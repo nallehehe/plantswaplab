@@ -10,5 +10,7 @@ import java.util.List;
 public interface PlantRepository extends JpaRepository<Plant, Long> {
     long countByUser(User user);
 
+    //List<Plant> findPlantByItemStatus(ItemStatus itemStatus);
+
     List<Plant> findPlantByStatus(Status status);
 }

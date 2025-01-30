@@ -110,6 +110,10 @@ public class PlantController {
             existingPlant.setStatus(plant.getStatus());
         }
 
+        if (plant.getPrice() != null) {
+            existingPlant.setPrice(plant.getPrice());
+        }
+
         if (plant.getUser() != null) {
             User user = userRepository.findById(plant.getUser().getId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found"));

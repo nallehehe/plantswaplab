@@ -1,10 +1,13 @@
 package com.example.plantswap.models;
 
+import com.example.plantswap.enumHolder.Growth;
 import com.example.plantswap.enumHolder.ItemStatus;
 import com.example.plantswap.enumHolder.Level;
 import com.example.plantswap.enumHolder.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import org.antlr.v4.runtime.misc.NotNull;
 
 @Entity
@@ -20,6 +23,11 @@ public class Plant {
 
     @NotNull
     private Integer age;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "growth")
+    private Growth growth;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -48,6 +56,10 @@ public class Plant {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    @Positive
+    @Min(50)
+    private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -135,5 +147,22 @@ public class Plant {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+
+    public Growth getGrowth() {
+        return growth;
+    }
+
+    public void setGrowth(Growth growth) {
+        this.growth = growth;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 }
