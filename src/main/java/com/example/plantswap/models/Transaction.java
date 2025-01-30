@@ -13,6 +13,10 @@ public class Transaction {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plant_id")
     private Plant plant;
 
@@ -43,5 +47,13 @@ public class Transaction {
 
     public void setTotalcost(Integer totalcost) {
         this.totalcost = totalcost;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -6,6 +6,7 @@ import com.example.plantswap.enumHolder.Level;
 import com.example.plantswap.enumHolder.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -59,6 +60,7 @@ public class Plant {
 
     @Positive
     @Min(50)
+    @Max(1000)
     private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)

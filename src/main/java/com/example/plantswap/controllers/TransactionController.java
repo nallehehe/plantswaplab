@@ -38,6 +38,11 @@ public class TransactionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plant is not for sale.");
         }
 
+        // https://stackoverflow.com/questions/1514910/how-can-i-properly-compare-two-integers-in-java
+        if (!plant.getPrice().equals(transaction.getTotalcost())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The total cost does not match the price.");
+        }
+
         /*if(plant.getPrice() != transaction.getTotalcost()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Total cost does not match with the price.");
         }*/
