@@ -4,7 +4,6 @@ import com.example.plantswap.enumHolder.ItemStatus;
 import com.example.plantswap.enumHolder.Status;
 import com.example.plantswap.models.Plant;
 import com.example.plantswap.models.Transaction;
-import com.example.plantswap.models.User;
 import com.example.plantswap.repository.PlantRepository;
 import com.example.plantswap.repository.TransactionRepository;
 import com.example.plantswap.repository.UserRepository;
@@ -36,14 +35,14 @@ public class TransactionController {
 
         Plant plant = plantRepository.findById(transaction.getPlant().getId()).get();
 
-        User user = userRepository.findById(transaction.getUser().getId()).get();
+        //User user = userRepository.findById(transaction.getUser().getId()).get();
 
         if(plant.getItemStatus() == ItemStatus.TRADE) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plant is not for sale.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is not for sale.");
         }
 
-        if(plant.getStatus() == Status.SOLD) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is already sold.");
+        if(plant.getStatus() == Status.SOLD || plant.getStatus() == Status.RESERVED || plant.getStatus() == Status.TRADED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is not available.");
         }
 
         // https://stackoverflow.com/questions/1514910/how-can-i-properly-compare-two-integers-in-java
@@ -61,6 +60,44 @@ public class TransactionController {
         plantRepository.save(plant);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+    }
+
+    @PostMapping("/trade")
+    public ResponseEntity<Transaction> createTradeTransaction(@RequestBody Transaction transaction) {
+        if(transaction.getPlant() != null && !plantRepository.existsById(transaction.getPlant().getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plant not found");
+        }
+
+        Plant plant = plantRepository.findById(transaction.getPlant().getId()).get();
+
+        if(plant.getStatus() == Status.SOLD || plant.getStatus() == Status.RESERVED
+                || plant.getStatus() == Status.TRADED || plant.getStatus() == Status.PENDING) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is not available.");
+        }
+
+        if(plant.getItemStatus() == ItemStatus.SALE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is not for up for trade.");
+        }
+
+        /*if(transaction.getTotalcost().equals(plant.getPrice())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This plant is up for trade, you cannot pay.");
+        }*/
+
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        transaction.setStatus(Status.PENDING);
+        transactionRepository.save(savedTransaction);
+
+        plant.setStatus(Status.RESERVED);
+        plantRepository.save(plant);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<Transaction>> getPendingTransactions() {
+        List<Transaction> transactions = transactionRepository.findPlantByStatus(Status.PENDING);
+        return ResponseEntity.ok(transactions);
     }
 
     @GetMapping
