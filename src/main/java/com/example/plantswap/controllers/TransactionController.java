@@ -4,6 +4,7 @@ import com.example.plantswap.enumHolder.ItemStatus;
 import com.example.plantswap.enumHolder.Status;
 import com.example.plantswap.models.Plant;
 import com.example.plantswap.models.Transaction;
+import com.example.plantswap.models.User;
 import com.example.plantswap.repository.PlantRepository;
 import com.example.plantswap.repository.TransactionRepository;
 import com.example.plantswap.repository.UserRepository;
@@ -35,7 +36,7 @@ public class TransactionController {
 
         Plant plant = plantRepository.findById(transaction.getPlant().getId()).get();
 
-        //User user = userRepository.findById(transaction.getUser().getId()).get();
+        User user = userRepository.findById(transaction.getUser().getId()).get();
 
         if(plant.getItemStatus() == ItemStatus.TRADE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is not for sale.");
@@ -50,13 +51,20 @@ public class TransactionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The total cost does not match the price.");
         }
 
+        if (transaction.getUser().getId() == plant.getUser().getId()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are the owner of this ad.");
+        }
+
         /*if(plant.getPrice() != transaction.getTotalcost()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Total cost does not match with the price.");
         }*/
 
+        transaction.setStatus(Status.BOUGHT);
+
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         plant.setStatus(Status.SOLD);
+        plant.setUser(user);
         plantRepository.save(plant);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);

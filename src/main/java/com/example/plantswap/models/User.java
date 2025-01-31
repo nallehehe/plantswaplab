@@ -18,6 +18,8 @@ public class User {
     @NotNull
     private String lastName;
 
+    /*@Transient
+    private List<Plant> ownedplants;*/
 
     public User() {
     }
@@ -45,4 +47,12 @@ public class User {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+    /*public List<Plant> getOwnedplants() {
+        return ownedplants;
+    }
+
+    public void setOwnedplants(List<Plant> ownedplants) {
+        this.ownedplants = ownedplants;
+    }*/
 }

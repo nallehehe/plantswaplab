@@ -62,7 +62,7 @@ public class Plant {
     private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_user_id")
+    @JoinColumn(name = "owner_user_id")
     @NotNull
     private User user;
 
