@@ -22,9 +22,21 @@ public class Transaction {
     @JoinColumn(name = "plant_id")
     private Plant plant;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plant_trade_id")
+    private Plant plantTrade;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "owner_exchange")
+    private Status buyerStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "seller_exchange")
+    private Status sellerStatus;
 
     @Max(1000)
     private Integer totalcost;
@@ -70,5 +82,21 @@ public class Transaction {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Status getBuyerStatus() {
+        return buyerStatus;
+    }
+
+    public void setBuyerStatus(Status buyerStatus) {
+        this.buyerStatus = buyerStatus;
+    }
+
+    public Status getSellerStatus() {
+        return sellerStatus;
+    }
+
+    public void setSellerStatus(Status sellerStatus) {
+        this.sellerStatus = sellerStatus;
     }
 }

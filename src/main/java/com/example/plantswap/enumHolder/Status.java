@@ -1,5 +1,5 @@
 package com.example.plantswap.enumHolder;
 
 public enum Status {
-    AVAILABLE, RESERVED, TRADED, SOLD, PENDING, BOUGHT
+    AVAILABLE, RESERVED, TRADED, SOLD, PENDING, BOUGHT, CANCELLED, ACCEPTED, REJECTED
 }

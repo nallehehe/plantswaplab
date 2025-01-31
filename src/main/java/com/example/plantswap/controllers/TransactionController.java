@@ -42,7 +42,8 @@ public class TransactionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is not for sale.");
         }
 
-        if(plant.getStatus() == Status.SOLD || plant.getStatus() == Status.RESERVED || plant.getStatus() == Status.TRADED) {
+        if(plant.getStatus() == Status.SOLD || plant.getStatus() == Status.RESERVED ||
+                plant.getStatus() == Status.TRADED || plant.getStatus() == Status.PENDING) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is not available.");
         }
 
@@ -87,9 +88,13 @@ public class TransactionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "That plant is not for up for trade.");
         }
 
-        /*if(transaction.getTotalcost().equals(plant.getPrice())) {
+        if (transaction.getUser().getId() == plant.getUser().getId()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are the owner of this ad.");
+        }
+
+        if(transaction.getTotalcost() != 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This plant is up for trade, you cannot pay.");
-        }*/
+        }
 
         Transaction savedTransaction = transactionRepository.save(transaction);
 
@@ -106,6 +111,42 @@ public class TransactionController {
     public ResponseEntity<List<Transaction>> getPendingTransactions() {
         List<Transaction> transactions = transactionRepository.findPlantByStatus(Status.PENDING);
         return ResponseEntity.ok(transactions);
+    }
+
+    //https://stackoverflow.com/questions/23042944/architectural-rest-how-do-i-design-a-rest-api-for-requestapproval-2-resources
+    @PutMapping("/pending/{id}")
+    public ResponseEntity<Transaction> updatePendingTransaction(@PathVariable long id, @RequestBody Transaction transaction) {
+        Transaction existingTransaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found."));
+
+        Plant existingPlant = plantRepository.findById(existingTransaction.getPlant().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found."));
+
+        User user = userRepository.findById(transaction.getUser().getId()).get();
+
+        if (transaction.getBuyerStatus() != null) {
+            existingTransaction.setBuyerStatus(transaction.getBuyerStatus());
+        }
+
+        if(transaction.getSellerStatus() != null) {
+            existingTransaction.setSellerStatus(transaction.getSellerStatus());
+        }
+
+        if (transaction.getSellerStatus() == Status.REJECTED || transaction.getBuyerStatus() == Status.REJECTED) {
+            existingTransaction.setStatus(Status.CANCELLED);
+            existingPlant.setStatus(Status.AVAILABLE);
+        }
+
+        else if (transaction.getSellerStatus() == Status.ACCEPTED && transaction.getBuyerStatus() == Status.ACCEPTED) {
+            existingTransaction.setStatus(Status.TRADED);
+            existingPlant.setStatus(Status.TRADED);
+            existingPlant.setUser(user);
+        }
+
+        plantRepository.save(existingPlant);
+
+        Transaction updatedTranscation = transactionRepository.save(existingTransaction);
+        return ResponseEntity.ok(updatedTranscation);
     }
 
     @GetMapping
