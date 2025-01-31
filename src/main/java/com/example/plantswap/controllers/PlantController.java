@@ -1,5 +1,6 @@
 package com.example.plantswap.controllers;
 
+import com.example.plantswap.enumHolder.ItemStatus;
 import com.example.plantswap.enumHolder.Status;
 import com.example.plantswap.models.Plant;
 import com.example.plantswap.models.User;
@@ -24,6 +25,7 @@ public class PlantController {
     private UserRepository userRepository;
 
     private int maxPlants = 10;
+    private int minimumPrice = 50;
 
     @PostMapping
     public ResponseEntity<Plant> createPlant(@RequestBody Plant plant) {
@@ -40,6 +42,12 @@ public class PlantController {
         if (userPlantAds >= maxPlants) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "The user cannot advertise more than " + maxPlants + " plants");
+        }
+
+        if (plant.getItemStatus() == ItemStatus.SALE && plant.getPrice() < minimumPrice) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The price cannot be less than " + minimumPrice);
+        } else if (plant.getItemStatus() == ItemStatus.TRADE && plant.getPrice() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This item is up for trade, it cannot have a price.");
         }
 
         Plant savedPlant = plantRepository.save(plant);
@@ -76,6 +84,10 @@ public class PlantController {
         if (userPlantAds >= maxPlants) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "The user cannot advertise more than " + maxPlants + " plants");
+        }
+
+        if (plant.getItemStatus() == ItemStatus.SALE && plant.getPrice() < minimumPrice) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The price cannot be less than " + minimumPrice);
         }
 
         if (plant.getName() != null) {

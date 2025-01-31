@@ -7,7 +7,6 @@ import com.example.plantswap.enumHolder.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import org.antlr.v4.runtime.misc.NotNull;
 
@@ -59,12 +58,11 @@ public class Plant {
     private Status status;
 
     @Positive
-    @Min(50)
     @Max(1000)
     private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "seller_user_id")
     @NotNull
     private User user;
 
