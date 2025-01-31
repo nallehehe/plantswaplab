@@ -35,7 +35,7 @@ public class PlantController {
         //https://stackoverflow.com/questions/10696490/does-spring-data-jpa-have-any-way-to-count-entites-using-method-name-resolving
         //https://docs.spring.io/spring-data/jpa/docs/1.6.4.RELEASE/reference/html/repositories.html
 
-        long userPlantAds = plantRepository.countByUser(plant.getUser());
+        long userPlantAds = plantRepository.countByUserAndStatusNot(plant.getUser(), Status.SOLD);
 
         if (userPlantAds >= maxPlants) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -71,7 +71,7 @@ public class PlantController {
         Plant existingPlant = plantRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found."));
 
-        long userPlantAds = plantRepository.countByUser(plant.getUser());
+        long userPlantAds = plantRepository.countByUserAndStatusNot(plant.getUser(), Status.SOLD);
 
         if (userPlantAds >= maxPlants) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,

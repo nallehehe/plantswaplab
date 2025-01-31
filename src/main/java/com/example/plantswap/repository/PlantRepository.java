@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PlantRepository extends JpaRepository<Plant, Long> {
-    long countByUser(User user);
+    long countByUserAndStatusNot(User user, Status status);
 
     //List<Plant> findPlantByItemStatus(ItemStatus itemStatus);
 
