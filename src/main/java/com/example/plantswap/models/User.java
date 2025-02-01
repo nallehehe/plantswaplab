@@ -18,7 +18,7 @@ public class User {
     @NotNull
     private String lastName;
 
-    /*@Transient
+    /*
     private List<Plant> ownedplants;*/
 
     public User() {

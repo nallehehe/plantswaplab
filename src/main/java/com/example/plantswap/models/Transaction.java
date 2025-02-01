@@ -99,4 +99,12 @@ public class Transaction {
     public void setSellerStatus(Status sellerStatus) {
         this.sellerStatus = sellerStatus;
     }
+
+    public Plant getPlantTrade() {
+        return plantTrade;
+    }
+
+    public void setPlantTrade(Plant plantTrade) {
+        this.plantTrade = plantTrade;
+    }
 }

@@ -30,8 +30,13 @@ public class TransactionController {
 
     @PostMapping("/sale")
     public ResponseEntity<Transaction> createSellTransaction(@RequestBody Transaction transaction) {
+
         if(transaction.getPlant() != null && !plantRepository.existsById(transaction.getPlant().getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plant not found");
+        }
+
+        if(transaction.getPlantTrade() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot add a plant trade in a sale transaction.");
         }
 
         Plant plant = plantRepository.findById(transaction.getPlant().getId()).get();
@@ -78,6 +83,7 @@ public class TransactionController {
         }
 
         Plant plant = plantRepository.findById(transaction.getPlant().getId()).get();
+        Plant plant_trading = plantRepository.findById(transaction.getPlantTrade().getId()).get();
 
         if(plant.getStatus() == Status.SOLD || plant.getStatus() == Status.RESERVED
                 || plant.getStatus() == Status.TRADED || plant.getStatus() == Status.PENDING) {
@@ -102,7 +108,9 @@ public class TransactionController {
         transactionRepository.save(savedTransaction);
 
         plant.setStatus(Status.RESERVED);
+        plant_trading.setStatus(Status.RESERVED);
         plantRepository.save(plant);
+        plantRepository.save(plant_trading);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
     }
@@ -122,7 +130,8 @@ public class TransactionController {
         Plant existingPlant = plantRepository.findById(existingTransaction.getPlant().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found."));
 
-        User user = userRepository.findById(transaction.getUser().getId()).get();
+        Plant existingTradePlant = plantRepository.findById(existingTransaction.getPlantTrade().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found."));
 
         if (transaction.getBuyerStatus() != null) {
             existingTransaction.setBuyerStatus(transaction.getBuyerStatus());
@@ -140,12 +149,19 @@ public class TransactionController {
         else if (transaction.getSellerStatus() == Status.ACCEPTED && transaction.getBuyerStatus() == Status.ACCEPTED) {
             existingTransaction.setStatus(Status.TRADED);
             existingPlant.setStatus(Status.TRADED);
-            existingPlant.setUser(user);
+            existingTradePlant.setStatus(Status.TRADED);
+
+            User userHolder = existingPlant.getUser();
+
+            existingPlant.setUser(existingTradePlant.getUser());
+            existingTradePlant.setUser(userHolder);
         }
 
-        plantRepository.save(existingPlant);
-
         Transaction updatedTranscation = transactionRepository.save(existingTransaction);
+
+        plantRepository.save(existingPlant);
+        plantRepository.save(existingTradePlant);
+
         return ResponseEntity.ok(updatedTranscation);
     }
 
