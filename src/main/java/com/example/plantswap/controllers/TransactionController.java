@@ -61,10 +61,6 @@ public class TransactionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are the owner of this ad.");
         }
 
-        /*if(plant.getPrice() != transaction.getTotalcost()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Total cost does not match with the price.");
-        }*/
-
         transaction.setStatus(Status.BOUGHT);
 
         Transaction savedTransaction = transactionRepository.save(transaction);
