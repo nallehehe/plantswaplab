@@ -1,7 +1,7 @@
 package com.example.plantswap.models;
 
 
-import com.example.plantswap.enumHolder.Status;
+import com.example.plantswap.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;

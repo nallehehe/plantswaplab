@@ -1,7 +1,7 @@
 package com.example.plantswap.controllers;
 
-import com.example.plantswap.enumHolder.ItemStatus;
-import com.example.plantswap.enumHolder.Status;
+import com.example.plantswap.enums.ItemStatus;
+import com.example.plantswap.enums.Status;
 import com.example.plantswap.models.Plant;
 import com.example.plantswap.models.Transaction;
 import com.example.plantswap.models.User;
@@ -177,7 +177,7 @@ public class TransactionController {
     @PutMapping("/{id}")
     public ResponseEntity<Transaction> updateTransaction(@PathVariable Long id, @RequestBody Transaction transaction) {
         Transaction existingTransaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found."));
 
         if (transaction.getPlant() != null) {
             existingTransaction.setPlant(transaction.getPlant());
@@ -185,7 +185,8 @@ public class TransactionController {
 
         if (transaction.getPlant() != null) {
             Plant plant = plantRepository.findById(transaction.getPlant().getId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction  not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plant not found"));
+
             existingTransaction.setPlant(plant);
         }
 

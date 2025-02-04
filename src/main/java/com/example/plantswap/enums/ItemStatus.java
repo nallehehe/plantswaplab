@@ -1,4 +1,4 @@
-package com.example.plantswap.enumHolder;
+package com.example.plantswap.enums;
 
 public enum ItemStatus {
     SALE, TRADE
