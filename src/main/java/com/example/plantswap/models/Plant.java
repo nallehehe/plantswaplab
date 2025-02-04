@@ -20,7 +20,7 @@ public class Plant {
     private long id;
 
     @NotNull
-    @Pattern(regexp = "^[A-Za-z]+$", message = "Plant name must contain only letters")
+    @Pattern(regexp = "^[A-Za-z\\s-]+$", message = "Plant name must contain only letters")
     private String name;
 
     @NotNull
