@@ -27,6 +27,7 @@ public class PlantController {
     private int maxPlants = 10;
     private int minimumPrice = 50;
 
+    //post method to create plant
     @PostMapping
     public ResponseEntity<Plant> createPlant(@RequestBody Plant plant) {
 
@@ -37,19 +38,25 @@ public class PlantController {
         //https://stackoverflow.com/questions/10696490/does-spring-data-jpa-have-any-way-to-count-entites-using-method-name-resolving
         //https://docs.spring.io/spring-data/jpa/docs/1.6.4.RELEASE/reference/html/repositories.html
 
+        //counts each plant owned by users but not the plants with the status sold or traded
         long userPlantAds = plantRepository.countByUserAndStatusNotAndStatusNot(plant.getUser(), Status.SOLD, Status.TRADED);
 
+        //user cannot have more than 10 available plant ads out
         if (userPlantAds >= maxPlants) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "The user cannot advertise more than " + maxPlants + " plants");
         }
 
+        //if the plant is getting put up for sale the price cannot be less than the minimum assigned price (50)
         if (plant.getItemStatus() == ItemStatus.SALE && plant.getPrice() < minimumPrice) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The price cannot be less than " + minimumPrice);
-        } else if (plant.getItemStatus() == ItemStatus.TRADE && plant.getPrice() != null) {
+        }
+        //if the plant is getting put up for trade you cannot assign a price to it
+        else if (plant.getItemStatus() == ItemStatus.TRADE && plant.getPrice() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This item is up for trade, it cannot have a price.");
         }
 
+        //you can't add a plant as traded or sold when you're putting up an add
         if (plant.getStatus() == Status.TRADED || plant.getStatus() == Status.SOLD) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't add a plant as traded or sold.");
         }
@@ -59,18 +66,21 @@ public class PlantController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPlant);
     }
 
+    //get all plants
     @GetMapping
     public ResponseEntity<List<Plant>> getAllPlants() {
         List<Plant> plants = plantRepository.findAll();
         return ResponseEntity.ok(plants);
     }
 
+    //get all available plants
     @GetMapping("/available")
     public ResponseEntity<List<Plant>> getAllAvailablePlants() {
         List<Plant> plants = plantRepository.findPlantByStatus(Status.AVAILABLE);
         return ResponseEntity.ok(plants);
     }
 
+    //get specific plant by id
     @GetMapping("/{id}")
     public ResponseEntity<Plant> getPlantById(@PathVariable Long id) {
         Plant plant = plantRepository.findById(id)
@@ -78,6 +88,7 @@ public class PlantController {
         return ResponseEntity.ok(plant);
     }
 
+    //update specific plant by id
     @PutMapping("/{id}")
     public ResponseEntity<Plant> updatePlant(@PathVariable Long id, @RequestBody Plant plant) {
         Plant existingPlant = plantRepository.findById(id)
@@ -144,7 +155,7 @@ public class PlantController {
         return ResponseEntity.ok(updatedPlant);
     }
 
-
+    //delete a plant by id
     @DeleteMapping("/{id}")
     public ResponseEntity<Plant> deletePlant(@PathVariable Long id) {
         if (!plantRepository.existsById(id)) {
