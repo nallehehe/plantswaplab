@@ -7,6 +7,7 @@ import com.example.plantswap.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import org.antlr.v4.runtime.misc.NotNull;
 
@@ -19,6 +20,7 @@ public class Plant {
     private long id;
 
     @NotNull
+    @Pattern(regexp = "^[A-Za-z]+$", message = "First name must contain only letters")
     private String name;
 
     @NotNull

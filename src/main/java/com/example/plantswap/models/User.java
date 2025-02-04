@@ -2,6 +2,7 @@ package com.example.plantswap.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import org.antlr.v4.runtime.misc.NotNull;
 
 @Entity
@@ -13,8 +14,10 @@ public class User {
     private long id;
 
     @NotNull
+    @Pattern(regexp = "^[A-Za-z]+$", message = "First name must contain only letters")
     private String firstName;
 
+    @Pattern(regexp = "^[A-Za-z]+$", message = "Last name must contain only letters")
     @NotNull
     private String lastName;
 
