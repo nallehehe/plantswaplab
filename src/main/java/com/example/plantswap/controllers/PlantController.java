@@ -37,7 +37,7 @@ public class PlantController {
         //https://stackoverflow.com/questions/10696490/does-spring-data-jpa-have-any-way-to-count-entites-using-method-name-resolving
         //https://docs.spring.io/spring-data/jpa/docs/1.6.4.RELEASE/reference/html/repositories.html
 
-        long userPlantAds = plantRepository.countByUserAndStatusNot(plant.getUser(), Status.SOLD);
+        long userPlantAds = plantRepository.countByUserAndStatusNotAndStatusNot(plant.getUser(), Status.SOLD, Status.TRADED);
 
         if (userPlantAds >= maxPlants) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -48,6 +48,10 @@ public class PlantController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The price cannot be less than " + minimumPrice);
         } else if (plant.getItemStatus() == ItemStatus.TRADE && plant.getPrice() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This item is up for trade, it cannot have a price.");
+        }
+
+        if (plant.getStatus() == Status.TRADED || plant.getStatus() == Status.SOLD) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't add a plant as traded or sold.");
         }
 
         Plant savedPlant = plantRepository.save(plant);
@@ -79,7 +83,11 @@ public class PlantController {
         Plant existingPlant = plantRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found."));
 
-        long userPlantAds = plantRepository.countByUserAndStatusNot(plant.getUser(), Status.SOLD);
+        long userPlantAds = plantRepository.countByUserAndStatusNotAndStatusNot(plant.getUser(), Status.SOLD, Status.TRADED);
+
+        if (plant.getStatus() == Status.TRADED || plant.getStatus() == Status.SOLD) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't add a plant as traded or sold.");
+        }
 
         if (userPlantAds >= maxPlants) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
