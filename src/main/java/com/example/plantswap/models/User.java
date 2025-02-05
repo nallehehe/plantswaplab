@@ -14,10 +14,10 @@ public class User {
     private long id;
 
     @NotNull
-    @Pattern(regexp = "^[A-Za-z\\s-]+$", message = "First name must contain only letters, spaces, and hyphens")
+    @Pattern(regexp = "^[A-Za-z\\s-]+$", message = "First name can only cotain letters and hyphens")
     private String firstName;
 
-    @Pattern(regexp = "^[A-Za-z\\s-]+$", message = "Last name must contain only letters")
+    @Pattern(regexp = "^[A-Za-z\\s-]+$", message = "Last name can only contain letters hyphens")
     @NotNull
     private String lastName;
 
