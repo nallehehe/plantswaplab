@@ -153,6 +153,7 @@ public class TransactionController {
         if (transaction.getSellerStatus() == Status.REJECTED || transaction.getBuyerStatus() == Status.REJECTED) {
             existingTransaction.setStatus(Status.CANCELLED);
             existingPlant.setStatus(Status.AVAILABLE);
+            existingTradePlant.setStatus(Status.AVAILABLE);
         }
 
         //if both accept the transaction and plant gets set as traded
