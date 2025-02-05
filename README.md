@@ -5,8 +5,11 @@ IntelliJ, postman och pgAdmin
 affärsregler:
 
 användare får endast ha 10 aktiva annonser uppe
+
 växter som är uppe för att bytas kan endast bytas mot andra växter
+
 om man byter växter så måste båda parter godkänna bytet för att det ska gå igenom
+
 växter som säljs måste ha ett fast pris mellan 50-1000 kr
 
 begränsningar:
