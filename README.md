@@ -1,3 +1,7 @@
+Installationsinstruktioner:
+
+IntelliJ, postman och pgAdmin
+
 affärsregler:
 
 användare får endast ha 10 aktiva annonser uppe
